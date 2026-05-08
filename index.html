@@ -903,7 +903,7 @@
           </div>
           <div class="magazine-content">
             <div class="magazine-image-container">
-              <img class="magazine-image" id="magazineImage" src="" alt="Điểm đến" crossorigin="anonymous" referrerpolicy="no-referrer">
+              <img class="magazine-image" id="magazineImage" src="" alt="Điểm đến" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="this.src='https://unsplash.com'">
             </div>
             <div class="magazine-info">
               <div class="magazine-section-content magazine-quote">
@@ -938,7 +938,7 @@
             <h2 class="destinations-title">🌏 Điểm đến nổi bật</h2>
             <div class="destinations-grid" id="destinationsGrid">
               <div class="destination-card" data-name="Phú Quốc" data-keywords="phu quoc">
-              <img class="destination-image" src="https://loremflickr.com/phu%20quoc/800/500" alt="Phú Quốc" crossorigin="anonymous" referrerpolicy="no-referrer">
+              <img class="destination-image" src="https://unsplash.com" alt="Phú Quốc" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="this.src='https://unsplash.com'">
               <div class="destination-info">
                 <h3 class="destination-name">🏝️ Phú Quốc</h3>
                 <p class="destination-desc">Đảo ngọc với bãi cát trắng mịn và nước biển trong veo.</p>
@@ -947,7 +947,7 @@
             </div>
 
             <div class="destination-card" data-name="Sa Pa" data-keywords="sa pa">
-              <img class="destination-image" src="https://loremflickr.com/sa%20pa/800/500" alt="Sa Pa" crossorigin="anonymous" referrerpolicy="no-referrer">
+              <img class="destination-image" src="https://unsplash.com" alt="Sa Pa" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="this.src='https://unsplash.com'">
               <div class="destination-info">
                 <h3 class="destination-name">🌄 Sa Pa</h3>
                 <p class="destination-desc">Đồi núi phủ mây, ruộng bậc thang và cà phê ấm áp.</p>
@@ -956,7 +956,7 @@
             </div>
 
             <div class="destination-card" data-name="Hội An" data-keywords="hoi an">
-              <img class="destination-image" src="https://loremflickr.com/hoi%20an/800/500" alt="Hội An" crossorigin="anonymous" referrerpolicy="no-referrer">
+              <img class="destination-image" src="https://unsplash.com" alt="Hội An" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="this.src='https://unsplash.com'">
               <div class="destination-info">
                 <h3 class="destination-name">🏮 Hội An</h3>
                 <p class="destination-desc">Phố cổ đèn lồng lung linh, ăn vặt và sống chậm.</p>
@@ -965,7 +965,7 @@
             </div>
 
             <div class="destination-card" data-name="Hạ Long" data-keywords="ha long">
-              <img class="destination-image" src="https://loremflickr.com/ha%20long/800/500" alt="Hạ Long" crossorigin="anonymous" referrerpolicy="no-referrer">
+              <img class="destination-image" src="https://unsplash.com" alt="Hạ Long" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="this.src='https://unsplash.com'">
               <div class="destination-info">
                 <h3 class="destination-name">⛰️ Hạ Long</h3>
                 <p class="destination-desc">Vịnh di sản với đảo đá huyền ảo và du thuyền lãng mạn.</p>
@@ -974,7 +974,7 @@
             </div>
 
             <div class="destination-card" data-name="Ninh Bình" data-keywords="ninh binh">
-              <img class="destination-image" src="https://loremflickr.com/ninh%20binh/800/500" alt="Ninh Bình" crossorigin="anonymous" referrerpolicy="no-referrer">
+              <img class="destination-image" src="https://unsplash.com" alt="Ninh Bình" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="this.src='https://unsplash.com'">
               <div class="destination-info">
                 <h3 class="destination-name">🚣 Ninh Bình</h3>
                 <p class="destination-desc">Sông nước hữu tình, cố đô và trải nghiệm thuyền độc đáo.</p>
@@ -1149,7 +1149,7 @@
 
     function getSmartImageUrl(destination, callback) {
       const mainUrl = `https://loremflickr.com/${encodeURIComponent(destination)}/800/500`;
-      const backupUrl = 'https://unsplash.com/photos/random';
+      const backupUrl = 'https://unsplash.com';
       
       const img = new Image();
       let timeoutId;
@@ -1194,20 +1194,6 @@
           imageElement.style.opacity = '1';
           if (callback) callback();
         };
-        
-        // Handle error with pastel fallback
-        imageElement.onerror = function() {
-          // Create pastel Duy Go frame
-          imageElement.style.background = 'linear-gradient(135deg, #87CEEB, #B0E0E6)';
-          imageElement.style.display = 'flex';
-          imageElement.style.alignItems = 'center';
-          imageElement.style.justifyContent = 'center';
-          imageElement.style.color = 'white';
-          imageElement.style.fontSize = '24px';
-          imageElement.style.fontWeight = 'bold';
-          imageElement.textContent = 'Duy Go Travel';
-          imageElement.style.opacity = '1';
-        };
       }, 250);
     }
 
@@ -1221,10 +1207,10 @@
       const capitalizedQuery = query.charAt(0).toUpperCase() + query.slice(1);
       
       // Start with online backup
-      const placeholderUrl = 'https://unsplash.com/photos/random';
+      const placeholderUrl = 'https://unsplash.com';
       
       card.innerHTML = `
-        <img class="destination-image" src="${placeholderUrl}" alt="${query}" crossorigin="anonymous" referrerpolicy="no-referrer" style="opacity: 0; transition: opacity 0.5s ease;">
+        <img class="destination-image" src="${placeholderUrl}" alt="${query}" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="this.src='https://unsplash.com'">
         <div class="destination-info">
           <h3 class="destination-name">🌍 ${capitalizedQuery}</h3>
           <p class="destination-desc">${desc}</p>
