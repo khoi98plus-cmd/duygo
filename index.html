@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duy Go - Đi đâu cũng được</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      color: #233d4d;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #e6fbff 0%, #f7fcff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .login-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .login-container {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 40px;
+      box-shadow: 0 20px 60px rgba(35, 61, 77, 0.12);
+      text-align: center;
+      max-width: 420px;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(24px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .login-logo {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #7dd9cf 0%, #82c5f9 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      letter-spacing: -0.05em;
+    }
+
+    .login-tagline {
+      font-size: 1rem;
+      color: #6f8e99;
+      margin-bottom: 30px;
+      font-style: italic;
+    }
+
+    .form-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #264653;
+      margin-bottom: 20px;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      border: 1.8px solid #d9f4ef;
+      border-radius: 28px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background-color: #fbfcff;
+    }
+
+    .login-input:focus {
+      outline: none;
+      border-color: #7dd9cf;
+      background-color: #ffffff;
+      box-shadow: 0 0 14px rgba(125, 217, 207, 0.25);
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #7dd9cf 0%, #82c5f9 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 28px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-top: 8px;
+    }
+
+    .login-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(34, 61, 77, 0.18);
+    }
+
+    .login-switch {
+      margin-top: 16px;
+      font-size: 0.95rem;
+      color: #5b7d8a;
+    }
+
+    .text-link {
+      background: none;
+      border: none;
+      color: #388b9e;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    .text-link:hover {
+      color: #2a6d7f;
+    }
+
+    .main-app {
+      display: none;
+    }
+
+    .main-app.active {
+      display: block;
+    }
+
+    .container {
+      width: min(1200px, 100% - 24px);
+      margin: 0 auto;
+      padding: 20px 0 40px;
+    }
+
+    .header {
+      background: #ffffff;
+      border: 1px solid #d6eef0;
+      backdrop-filter: blur(10px);
+      padding: 20px 0;
+      margin-bottom: 24px;
+      border-radius: 32px;
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      box-shadow: 0 10px 28px rgba(35, 61, 77, 0.08);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      gap: 16px;
+    }
+
+    .logo {
+      font-size: 2.2rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #7dd9cf 0%, #82c5f9 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.05em;
+    }
+
+    .tagline {
+      font-size: 0.95rem;
+      color: #377a88;
+      font-weight: 600;
+      font-style: italic;
+      margin-left: 8px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .user-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #82c5f9 0%, #7dd9cf 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #ffffff;
+      font-size: 1.1rem;
+    }
+
+    .logout-btn {
+      padding: 8px 16px;
+      background: #c7eef4;
+      border: 1px solid #82c5f9;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #1f5961;
+      transition: transform 0.3s ease, background 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn:hover {
+      background: #9cd7df;
+      transform: scale(1.03);
+    }
+
+    .hero-section {
+      background: #ffffff;
+      border: 1px solid #d6eef0;
+      border-radius: 32px;
+      padding: 32px 28px;
+      margin-bottom: 28px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(35, 61, 77, 0.06);
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 3.5vw, 3.2rem);
+      font-weight: 900;
+      color: #1f3f51;
+      margin-bottom: 16px;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      color: #5f7e8a;
+      margin-bottom: 28px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .search-box {
+      position: relative;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 16px 24px 16px 50px;
+      border: 1.8px solid #c9eae3;
+      border-radius: 32px;
+      background: #f8fbfc;
+      font-size: 1rem;
+      color: #1f3f51;
+      box-shadow: 0 10px 18px rgba(99, 179, 165, 0.15);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #7dd9cf;
+      box-shadow: 0 15px 32px rgba(125, 217, 207, 0.2);
+      background: #ffffff;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: #3e6a72;
+    }
+
+    .search-status {
+      margin-top: 16px;
+      font-size: 0.95rem;
+      color: #4d6d78;
+      min-height: 22px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .destinations-title {
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: #1f4a57;
+      margin-bottom: 18px;
+    }
+
+    .destinations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .destination-card {
+      background: #ffffff;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 16px 36px rgba(35, 61, 77, 0.08);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+      cursor: pointer;
+      border: 1px solid #e1f2f0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .destination-card.hide {
+      display: none;
+    }
+
+    .destination-card:hover {
+      transform: translateY(-10px) scale(1.01);
+      box-shadow: 0 26px 56px rgba(35, 61, 77, 0.15);
+      border-color: #9de3d2;
+    }
+
+    .destination-image {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      position: relative;
+      z-index: 10;
+    }
+
+    .destination-image-container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .destination-card:hover .destination-image {
+      transform: scale(1.08);
+    }
+
+    .destination-info {
+      padding: 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .destination-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #25727a;
+      margin-bottom: 8px;
+    }
+
+    .destination-desc {
+      font-size: 0.95rem;
+      color: #5f7e8a;
+      margin-bottom: 14px;
+      flex: 1;
+    }
+
+    .card-button {
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #7dd9cf 0%, #82c5f9 100%);
+      border: none;
+      border-radius: 20px;
+      color: #ffffff;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      font-size: 0.95rem;
+      width: fit-content;
+    }
+
+    .card-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(34, 61, 77, 0.18);
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .tips-box,
+    .cost-estimator {
+      background: #ffffff;
+      border-radius: 32px;
+      padding: 22px;
+      border: 1px solid #e1f2f0;
+      box-shadow: 0 12px 30px rgba(35, 61, 77, 0.07);
+    }
+
+    .tips-title,
+    .cost-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #25727a;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tips-content {
+      font-size: 0.95rem;
+      color: #4d6d78;
+      line-height: 1.75;
+      font-style: italic;
+      background: #f7fbfc;
+      padding: 14px;
+      border-radius: 18px;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .tips-refresh {
+      padding: 10px 14px;
+      background: #d6f0ee;
+      border: none;
+      border-radius: 18px;
+      cursor: pointer;
+      font-weight: 700;
+      color: #1f5961;
+      margin-top: 14px;
+      width: 100%;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .tips-refresh:hover {
+      background: #a6d8d1;
+      transform: scale(1.03);
+    }
+
+    .cost-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.8px solid #d0edf1;
+      border-radius: 20px;
+      font-size: 1rem;
+      background-color: #fbfcff;
+      margin-bottom: 14px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .cost-input:focus {
+      outline: none;
+      border-color: #7dd9cf;
+      box-shadow: 0 0 14px rgba(125, 217, 207, 0.2);
+    }
+
+    .cost-button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #82c5f9 0%, #7dd9cf 100%);
+      border: none;
+      border-radius: 20px;
+      color: #ffffff;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .cost-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(34, 61, 77, 0.18);
+    }
+
+    .cost-advice {
+      background: #f7fbfc;
+      padding: 14px;
+      border-radius: 18px;
+      margin-top: 14px;
+      font-size: 0.95rem;
+      color: #1f5961;
+      font-weight: 600;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .destination-card.new {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    .magazine-section {
+      background: #f8fafc;
+      border-radius: 30px;
+      padding: 32px;
+      margin: 24px 0;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .magazine-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .magazine-badge {
+      background: linear-gradient(135deg, #7dd9cf 0%, #82c5f9 100%);
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .magazine-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #1e293b;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+    }
+
+    .magazine-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .magazine-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 24px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 10;
+    }
+
+    .magazine-info {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .magazine-section-content {
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .magazine-section-content h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .magazine-section-content p {
+      color: #475569;
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    .magazine-section-content ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .magazine-section-content li {
+      padding: 8px 0;
+      color: #475569;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .magazine-quote {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+      border-left: 4px solid #82c5f9;
+    }
+
+    .magazine-map {
+      margin-top: 16px;
+      border-radius: 20px;
+      overflow: hidden;
+      height: 200px;
+    }
+
+    .magazine-map iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .magazine-route-button {
+      background: linear-gradient(135deg, #7dd9cf 0%, #82c5f9 100%);
+      color: #ffffff;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      align-self: flex-start;
+    }
+
+    .magazine-route-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(125, 217, 207, 0.3);
+    }
+
+    @media (max-width: 900px) {
+      .magazine-content {
+        grid-template-columns: 1fr;
+      }
+
+      .magazine-image {
+        height: 300px;
+      }
+
+      .magazine-title {
+        font-size: 1.8rem;
+      }
+    }
+
+    .dark-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(34, 61, 77, 0.12);
+    }
+
+    .quote-block {
+      padding: 20px 24px;
+      border-left: 4px solid #f7a8d0;
+      background: rgba(247, 168, 208, 0.12);
+      border-radius: 22px;
+      color: #5f6d7a;
+      font-style: italic;
+      line-height: 1.9;
+      box-shadow: inset 0 0 0 1px rgba(247, 168, 208, 0.18);
+    }
+
+    .quote-block strong {
+      display: block;
+      margin-bottom: 10px;
+      color: #2e4f5c;
+      font-weight: 800;
+    }
+
+    .modal-card.dark {
+      background: #0f1d27;
+      border-color: #22435b;
+    }
+
+    .modal-card.dark .modal-left {
+      background: #102333;
+    }
+
+    .modal-card.dark .modal-left::after {
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.32));
+    }
+
+    .modal-card.dark .modal-close {
+      background: #162b3c;
+      color: #e6f5ff;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+    }
+
+    .modal-card.dark .modal-badge {
+      background: rgba(255, 255, 255, 0.08);
+      color: #c9e8ff;
+      border-color: rgba(201, 232, 255, 0.24);
+      box-shadow: none;
+    }
+
+    .modal-card.dark .modal-title,
+    .modal-card.dark .article-section h3 {
+      color: #d8ecff;
+    }
+
+    .modal-card.dark .modal-article,
+    .modal-card.dark .article-section p,
+    .modal-card.dark .article-section ul {
+      color: #cbdfea;
+    }
+
+    .modal-card.dark .article-section li {
+      margin-bottom: 10px;
+    }
+
+    .modal-card.dark .route-button {
+      background: linear-gradient(135deg, #3a7bb9 0%, #1f5a8c 100%);
+    }
+
+    .modal-card.dark .close-page-button {
+      background: linear-gradient(135deg, #6f4a7f 0%, #4a3f60 100%);
+      color: #f7f3f3;
+    }
+
+    .modal-card.dark .modal-map {
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    }
+
+    @keyframes titleShine {
+      0% {
+        background-position: 0% center;
+      }
+      100% {
+        background-position: 200% center;
+      }
+    }
+
+    .article-section h3 {
+      font-size: 1.05rem;
+      color: #1c4952;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .article-section p,
+    .article-section ul {
+      margin: 0;
+      color: #4c6f7d;
+    }
+
+    .article-section ul {
+      list-style: disc inside;
+    }
+
+    .article-section li {
+      margin-bottom: 10px;
+    }
+
+    .route-button,
+    .close-page-button {
+      width: 100%;
+      padding: 16px 22px;
+      border: none;
+      border-radius: 28px;
+      color: #ffffff;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 16px;
+    }
+
+    .route-button {
+      background: linear-gradient(135deg, #7dd9cf 0%, #82c5f9 100%);
+    }
+
+    .close-page-button {
+      background: linear-gradient(135deg, #f7a8d0 0%, #f7d5b8 100%);
+      color: #3f4a56;
+    }
+
+    .route-button:hover,
+    .close-page-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(34, 61, 77, 0.18);
+    }
+
+    .modal-map {
+      width: 100%;
+      height: 200px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(125, 217, 207, 0.2);
+      margin-bottom: 16px;
+    }
+
+    .modal-map iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    @media (max-width: 900px) {
+      .modal-card {
+        grid-template-columns: 1fr;
+        max-height: 90vh;
+      }
+
+      .modal-left,
+      .modal-right {
+        padding: 0;
+      }
+
+      .modal-right {
+        padding: 26px 22px 18px;
+      }
+
+      .modal-map {
+        height: 200px;
+      }
+    }
+
+    .modal-map iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-screen" id="loginScreen">
+    <div class="login-container">
+      <div class="login-logo">🌍 Duy Go</div>
+      <p class="login-tagline">Đi đâu cũng được, miễn là cùng nhau</p>
+      <div id="loginForm">
+        <div class="form-title">Đăng nhập</div>
+        <input type="text" class="login-input" id="loginUsername" placeholder="Tên của bạn..." />
+        <input type="password" class="login-input" id="loginPassword" placeholder="Mật khẩu..." />
+        <button class="login-button" onclick="handleLogin()">Đăng nhập ngay 🚀</button>
+        <p class="login-switch">Chưa có tài khoản? <button class="text-link" onclick="showRegisterForm()">Đăng ký ngay</button></p>
+      </div>
+
+      <div id="registerForm" class="hidden">
+        <div class="form-title">Đăng ký</div>
+        <input type="text" class="login-input" id="registerName" placeholder="Tên của bạn..." />
+        <input type="email" class="login-input" id="registerEmail" placeholder="Email..." />
+        <input type="password" class="login-input" id="registerPassword" placeholder="Mật khẩu..." />
+        <button class="login-button" onclick="handleRegister()">Tạo tài khoản 💫</button>
+        <p class="login-switch">Đã có tài khoản? <button class="text-link" onclick="showLoginForm()">Đăng nhập</button></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-app" id="mainApp">
+    <div class="container">
+      <div class="header">
+        <div class="header-content">
+          <div>
+            <div class="logo">🌍 Duy Go</div>
+            <div class="tagline">Đi đâu cũng được, miễn là cùng nhau</div>
+          </div>
+          <div class="user-info">
+            <div class="user-avatar" id="userAvatar">D</div>
+            <span id="userName">Xin chào!</span>
+            <button class="logout-btn" onclick="handleLogout()">Đăng xuất</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-section">
+        <div class="hero-title">Duy Go - Ủn ỉn cùng bạn bay khắp thế gian</div>
+        <div class="hero-subtitle">Gõ tên địa điểm bất kỳ trên thế giới rồi nhấn Enter, Duy Go sẽ tạo thẻ mới với hình ảnh và mô tả hấp dẫn để bạn khám phá!</div>
+        <div class="search-container">
+          <input type="text" class="search-input" id="searchInput" placeholder="🔍 Tìm kiếm điểm đến..." />
+          <button class="search-button" onclick="handleSearch()">Tìm kiếm</button>
+        </div>
+        <div class="search-status" id="searchStatus"></div>
+        
+        <!-- Tạp chí Khám phá Section -->
+        <div class="magazine-section" id="magazineSection" style="display: none;">
+          <div class="magazine-header">
+            <div class="magazine-badge">✈️ 📖 Tạp chí Khám phá</div>
+            <h2 class="magazine-title" id="magazineTitle">Điểm đến dễ thương</h2>
+          </div>
+          <div class="magazine-content">
+            <div class="magazine-image-container">
+              <img class="magazine-image" id="magazineImage" src="" alt="Điểm đến" crossorigin="anonymous" referrerpolicy="no-referrer">
+            </div>
+            <div class="magazine-info">
+              <div class="magazine-section-content magazine-quote">
+                <strong>"Một chuyến đi đáng nhớ luôn bắt đầu từ câu chuyện và cảm xúc."</strong>
+                <p>📝 <span id="magazineQuote"></span></p>
+              </div>
+              <div class="magazine-section-content">
+                <h3>📜 Lịch sử & Văn hóa</h3>
+                <p>🕰️ <span id="magazineHistory"></span></p>
+              </div>
+              <div class="magazine-section-content">
+                <h3>✨ Top 3 trải nghiệm phải thử</h3>
+                <ul>
+                  <li>🌅 <span id="magazineExp1"></span></li>
+                  <li>🍽️ <span id="magazineExp2"></span></li>
+                  <li>🏛️ <span id="magazineExp3"></span></li>
+                </ul>
+              </div>
+              <div class="magazine-section-content">
+                <h3>🌤️ Thời điểm đi đẹp nhất</h3>
+                <p>📅 <span id="magazineBestTime"></span></p>
+              </div>
+              <button class="magazine-route-button" id="magazineRouteButton">Chỉ đường</button>
+              <button class="magazine-route-button" id="magazineMapButton" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); margin-top: 8px;">🗺️ Xem bản đồ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+        
+        <div class="main-grid">
+          <div class="main-content">
+            <h2 class="destinations-title">🌏 Điểm đến nổi bật</h2>
+            <div class="destinations-grid" id="destinationsGrid">
+              <div class="destination-card" data-name="Phú Quốc" data-keywords="phu quoc">
+              <img class="destination-image" src="https://loremflickr.com/phu%20quoc/800/500" alt="Phú Quốc" crossorigin="anonymous" referrerpolicy="no-referrer">
+              <div class="destination-info">
+                <h3 class="destination-name">🏝️ Phú Quốc</h3>
+                <p class="destination-desc">Đảo ngọc với bãi cát trắng mịn và nước biển trong veo.</p>
+                <button class="card-button">Khám phá</button>
+              </div>
+            </div>
+
+            <div class="destination-card" data-name="Sa Pa" data-keywords="sa pa">
+              <img class="destination-image" src="https://loremflickr.com/sa%20pa/800/500" alt="Sa Pa" crossorigin="anonymous" referrerpolicy="no-referrer">
+              <div class="destination-info">
+                <h3 class="destination-name">🌄 Sa Pa</h3>
+                <p class="destination-desc">Đồi núi phủ mây, ruộng bậc thang và cà phê ấm áp.</p>
+                <button class="card-button">Khám phá</button>
+              </div>
+            </div>
+
+            <div class="destination-card" data-name="Hội An" data-keywords="hoi an">
+              <img class="destination-image" src="https://loremflickr.com/hoi%20an/800/500" alt="Hội An" crossorigin="anonymous" referrerpolicy="no-referrer">
+              <div class="destination-info">
+                <h3 class="destination-name">🏮 Hội An</h3>
+                <p class="destination-desc">Phố cổ đèn lồng lung linh, ăn vặt và sống chậm.</p>
+                <button class="card-button">Khám phá</button>
+              </div>
+            </div>
+
+            <div class="destination-card" data-name="Hạ Long" data-keywords="ha long">
+              <img class="destination-image" src="https://loremflickr.com/ha%20long/800/500" alt="Hạ Long" crossorigin="anonymous" referrerpolicy="no-referrer">
+              <div class="destination-info">
+                <h3 class="destination-name">⛰️ Hạ Long</h3>
+                <p class="destination-desc">Vịnh di sản với đảo đá huyền ảo và du thuyền lãng mạn.</p>
+                <button class="card-button">Khám phá</button>
+              </div>
+            </div>
+
+            <div class="destination-card" data-name="Ninh Bình" data-keywords="ninh binh">
+              <img class="destination-image" src="https://loremflickr.com/ninh%20binh/800/500" alt="Ninh Bình" crossorigin="anonymous" referrerpolicy="no-referrer">
+              <div class="destination-info">
+                <h3 class="destination-name">🚣 Ninh Bình</h3>
+                <p class="destination-desc">Sông nước hữu tình, cố đô và trải nghiệm thuyền độc đáo.</p>
+                <button class="card-button">Khám phá</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <div class="tips-box">
+            <div class="tips-title">💡 Mẹo nhỏ</div>
+            <div class="tips-content" id="tipsContent">Nhớ mang theo tiền, đừng mang theo nỗi buồn 😄</div>
+            <button class="tips-refresh" onclick="refreshTips()">Mẹo khác 🔄</button>
+          </div>
+
+          <div class="cost-estimator">
+            <div class="cost-title">💰 Ước tính chi phí</div>
+            <input type="number" class="cost-input" id="budgetInput" placeholder="Nhập ngân sách (VND)..." />
+            <button class="cost-button" onclick="estimateCost()">Tính toán 🧮</button>
+            <div class="cost-advice" id="costAdvice">Nhập số tiền để nhận lời khuyên</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tips = [
+      "Nhớ mang theo tiền, đừng mang theo nỗi buồn 😄",
+      "Chụp ảnh nhiều, bằng chứng tình yêu là quan trọng 📸",
+      "Đi một mình cũng là một hành trình, đi với người khác là một kỷ niệm 🌟",
+      "Du lịch là điều duy nhất khiến bạn giàu hơn mà không tốn kém 💸",
+      "Bản đồ tốt hơn GPS, nhưng điện thoại pin yếu sẽ là vấn đề 😅",
+      "Đi du lịch không phải để thoát khỏi cuộc sống, mà để sống thật sự 🌍",
+      "Luôn check in muộn, vì chuyến xe buýt luôn muộn 🚌",
+      "Xin lỗi sớm, sẽ dễ dàng hơn khi bạn bị lạc 🗺️"
+    ];
+
+    const searchInput = document.getElementById('searchInput');
+    const searchStatus = document.getElementById('searchStatus');
+
+    function normalizeSearchText(value) {
+      return value
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .replace(/đ/g, 'd');
+    }
+
+    function filterDestinations() {
+      const query = normalizeSearchText(searchInput.value.trim());
+      const cards = document.querySelectorAll('.destination-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const title = normalizeSearchText(card.dataset.name || '');
+        const keywords = normalizeSearchText(card.dataset.keywords || '');
+        const desc = normalizeSearchText(card.querySelector('.destination-desc').innerText || '');
+        const text = `${title} ${keywords} ${desc}`;
+
+        if (query === '' || text.includes(query)) {
+          card.classList.remove('hide');
+          visibleCount += 1;
+        } else {
+          card.classList.add('hide');
+        }
+      });
+
+      if (query === '') {
+        searchStatus.textContent = '';
+      } else if (visibleCount === 0) {
+        searchStatus.textContent = 'Không tìm thấy điểm đến phù hợp. Thử từ khóa khác nhé!';
+      } else {
+        searchStatus.textContent = `Tìm thấy ${visibleCount} điểm đến phù hợp.`;
+      }
+    }
+
+    const descriptions = [
+      "Nơi này đẹp đến nỗi bạn sẽ muốn đổi hộ chiếu ngay! 🛂",
+      "Cảnh đẹp như tranh, đồ ăn ngon quên lối về! 🍜",
+      "Một thiên đường cho những kẻ lười biếng và thích phiêu lưu. 🏖️",
+      "Đầy ắp những câu chuyện cười và kỷ niệm đáng nhớ. 😂",
+      "Nơi lý tưởng để thư giãn, uống cà phê và quên hết stress. ☕",
+      "Một hành trình đầy bất ngờ, phiêu lưu và... đồ ăn ngon! 🚀🍲",
+      "Điểm đến hoàn hảo cho những tâm hồn lãng mạn và thích selfie. 📸💕",
+      "Nơi giao thoa giữa văn hóa, thiên nhiên và... wifi miễn phí? 🌿📶",
+      "Sẽ khiến bạn muốn quay lại mãi mãi, hoặc ít nhất là đến lần nữa. 🔄",
+      "Đẹp đến mức bạn sẽ nghĩ mình đang mơ! 🌈",
+      "Nơi này có tất cả: biển xanh, núi cao và... quán cà phê. 🏔️☕",
+      "Một chuyến đi sẽ thay đổi cuộc đời bạn... hoặc ít nhất là Instagram. 📱",
+      "Đầy ắp những điều bất ngờ, từ cảnh đẹp đến... đồ ăn lạ. 😲🍲",
+      "Nơi lý tưởng để gặp gỡ bạn bè cũ và tạo kỷ niệm mới. 👫",
+      "Cảnh quan tuyệt đẹp, văn hóa phong phú và... giá rẻ! 💸",
+      "Sẽ khiến bạn quên hết mọi thứ, trừ... điện thoại để chụp ảnh. 📷"
+    ];
+
+    function generateDescription() {
+      return descriptions[Math.floor(Math.random() * descriptions.length)];
+    }
+
+    function generateBeautyLine(query) {
+      const lines = [
+        `Cảnh sắc của ${query} như một bức tranh màu nước, mềm mại và lãng mạn.`,
+        `Ánh hoàng hôn ở ${query} làm trái tim bạn tan chảy như kem mùa hè.`,
+        `${query} là nơi mà thiên nhiên và thơ ca tự nhiên gặp nhau.`
+      ];
+      return lines[Math.floor(Math.random() * lines.length)];
+    }
+
+    function generateSpecialtyLine(query) {
+      const specials = [
+        `Bún ${query} đặc trưng, thơm phức và ăn cùng rau sống tươi mát.`,
+        `Món ngọt nổi tiếng nơi đây khiến bạn muốn ăn thêm một lần nữa.`,
+        `Đặc sản ${query} là một trải nghiệm ẩm thực không thể quên.`
+      ];
+      return specials[Math.floor(Math.random() * specials.length)];
+    }
+
+    function generateMoodLine(query) {
+      const moods = [
+        `Yêu ${query} ngay từ cái nhìn đầu tiên như một lời thả thính lãng mạn.`,
+        `Mỗi bước chân ở ${query} đều đem về một nụ cười đáng yêu.`,
+        `Nếu ${query} là người, chắc chắn bạn sẽ muốn nhắn tin mấy chục lần.`
+      ];
+      return moods[Math.floor(Math.random() * moods.length)];
+    }
+
+    function generateHistoryLine(query) {
+      const histories = [
+        `${query} bắt đầu như một thương cảng nhộn nhịp, nơi giao thoa văn hóa và câu chuyện của người xưa.`,
+        `Từ những ngôi đền cổ kính đến con phố nhỏ, ${query} lưu giữ nhiều dấu ấn lịch sử và phong tục độc đáo.`,
+        `Lịch sử ${query} được kể bằng màu sắc, âm nhạc và những lễ hội đậm chất địa phương.`
+      ];
+      return histories[Math.floor(Math.random() * histories.length)];
+    }
+
+    function generateExperienceList(query) {
+      const experiences = [
+        [`Ngắm hoàng hôn rực rỡ trên bờ biển ${query}.`, `Thưởng thức đặc sản nổi tiếng của ${query} trong chợ đêm.`, `Đi dạo phố cổ và khám phá những góc nhỏ đầy hoài niệm.`],
+        [`Leo lên đài quan sát để thấy toàn cảnh ${query} trong ánh chiều.`, `Thử món đặc sản địa phương mà người dân ở đây tự hào nhất.`, `Lang thang trên những con đường lát đá cổ kính.`],
+        [`Cano ngắm cảnh trên sông hoặc vịnh của ${query}.`, `Thưởng thức cà phê/cocktail tại quán rooftop local.`, `Khám phá khu ẩm thực để ăn hết các món trứ danh.`]
+      ];
+      return experiences[Math.floor(Math.random() * experiences.length)];
+    }
+
+    function generateBestTimeLine(query) {
+      const times = [
+        `Tháng 9 đến 11 là lúc ${query} đẹp nhất, thời tiết mát và cảnh sắc lãng mạn.`,
+        `Nếu thích không khí tươi mới, hãy đi ${query} vào tháng 3 hoặc 4 khi hoa nở rộ.`,
+        `Mùa hè từ 5 đến 8 là thời điểm ${query} đông đúc nhất nhưng cũng sôi động nhất.`,
+        `Đông đến xuân là lúc ${query} yên bình và thơ mộng, thích hợp cho những ai muốn nghỉ dưỡng.`
+      ];
+      return times[Math.floor(Math.random() * times.length)];
+    }
+
+    function getTravelQuote(query) {
+      const quotes = [
+        "Đi du lịch không phải để trốn chạy cuộc sống, mà là để cuộc sống không trốn chạy khỏi bạn. 🌍",
+        "Hãy thu thập ký ức, không phải đồ vật. 📸",
+        "Thế giới là một cuốn sách, và những người không đi chỉ đọc được một trang. 📖",
+        "Du lịch là cách duy nhất để chi tiêu mà vẫn làm bạn giàu có hơn. 💰",
+        "Đi là để trở về, nhưng không phải là chính mình của ngày hôm qua. 🔄",
+        "Đôi khi bạn cần lạc đường để tìm thấy con đường đúng đắn. 🗺️",
+        "Hành trình vạn dặm bắt đầu từ một bước chân... và một vé máy bay. ✈️",
+        "Đừng gọi nó là giấc mơ, hãy gọi nó là kế hoạch. 📋",
+        "Cuộc sống quá ngắn để ở một chỗ. 🏃‍♂️",
+        "Du lịch chữa lành tâm hồn tốt hơn bất kỳ loại thuốc nào. 💊"
+      ];
+      return quotes[Math.floor(Math.random() * quotes.length)];
+    }
+
+    function getSmartImageUrl(destination, callback) {
+      const mainUrl = `https://loremflickr.com/${encodeURIComponent(destination)}/800/500`;
+      const backupUrl = 'https://unsplash.com/photos/random';
+      
+      const img = new Image();
+      let timeoutId;
+      
+      // Set timeout for 2 seconds
+      timeoutId = setTimeout(() => {
+        callback(backupUrl);
+      }, 2000);
+      
+      img.onload = function() {
+        clearTimeout(timeoutId);
+        callback(mainUrl);
+      };
+      
+      img.onerror = function() {
+        clearTimeout(timeoutId);
+        callback(backupUrl);
+      };
+      
+      img.src = mainUrl;
+    }
+
+    function setImageWithFade(imageElement, newSrc, callback) {
+      if (imageElement.src === newSrc) {
+        if (callback) callback();
+        return;
+      }
+      
+      // Add security attributes
+      imageElement.crossOrigin = 'anonymous';
+      imageElement.referrerPolicy = 'no-referrer';
+      
+      // Fade out
+      imageElement.style.opacity = '0';
+      imageElement.style.transition = 'opacity 0.25s ease';
+      
+      setTimeout(() => {
+        imageElement.src = newSrc;
+        
+        // Fade in
+        imageElement.onload = function() {
+          imageElement.style.opacity = '1';
+          if (callback) callback();
+        };
+        
+        // Handle error with pastel fallback
+        imageElement.onerror = function() {
+          // Create pastel Duy Go frame
+          imageElement.style.background = 'linear-gradient(135deg, #87CEEB, #B0E0E6)';
+          imageElement.style.display = 'flex';
+          imageElement.style.alignItems = 'center';
+          imageElement.style.justifyContent = 'center';
+          imageElement.style.color = 'white';
+          imageElement.style.fontSize = '24px';
+          imageElement.style.fontWeight = 'bold';
+          imageElement.textContent = 'Duy Go Travel';
+          imageElement.style.opacity = '1';
+        };
+      }, 250);
+    }
+
+    function createNewDestination(query) {
+      const grid = document.getElementById('destinationsGrid');
+      const card = document.createElement('div');
+      card.className = 'destination-card new';
+      card.dataset.name = query;
+      card.dataset.keywords = query.toLowerCase().replace(/\s+/g, ' ');
+      const desc = generateDescription();
+      const capitalizedQuery = query.charAt(0).toUpperCase() + query.slice(1);
+      
+      // Start with online backup
+      const placeholderUrl = 'https://unsplash.com/photos/random';
+      
+      card.innerHTML = `
+        <img class="destination-image" src="${placeholderUrl}" alt="${query}" crossorigin="anonymous" referrerpolicy="no-referrer" style="opacity: 0; transition: opacity 0.5s ease;">
+        <div class="destination-info">
+          <h3 class="destination-name">🌍 ${capitalizedQuery}</h3>
+          <p class="destination-desc">${desc}</p>
+          <button class="card-button">Khám phá</button>
+        </div>
+      `;
+      
+      grid.appendChild(card);
+      
+      // Get smart image and apply with fade
+      const imgElement = card.querySelector('.destination-image');
+      getSmartImageUrl(query, (imageUrl) => {
+        setImageWithFade(imgElement, imageUrl);
+      });
+      
+      searchInput.value = '';
+      showMagazineSection(query);
+    }
+
+    function showMagazineSection(query) {
+      const magazineSection = document.getElementById('magazineSection');
+      const magazineTitle = document.getElementById('magazineTitle');
+      const magazineImage = document.getElementById('magazineImage');
+      const magazineQuote = document.getElementById('magazineQuote');
+      const magazineHistory = document.getElementById('magazineHistory');
+      const magazineExp1 = document.getElementById('magazineExp1');
+      const magazineExp2 = document.getElementById('magazineExp2');
+      const magazineExp3 = document.getElementById('magazineExp3');
+      const magazineBestTime = document.getElementById('magazineBestTime');
+      const magazineRouteButton = document.getElementById('magazineRouteButton');
+      const magazineMapButton = document.getElementById('magazineMapButton');
+      
+      const cleanQuery = query.trim();
+      const capitalizedQuery = cleanQuery.charAt(0).toUpperCase() + cleanQuery.slice(1);
+      
+      // Show section
+      magazineSection.style.display = 'block';
+      
+      // Update content
+      magazineTitle.textContent = capitalizedQuery;
+      
+      // Get smart image and apply with fade
+      getSmartImageUrl(cleanQuery, (imageUrl) => {
+        setImageWithFade(magazineImage, imageUrl);
+      });
+      
+      magazineImage.alt = cleanQuery;
+      
+      const historyText = generateHistoryLine(cleanQuery);
+      const experiences = generateExperienceList(cleanQuery);
+      const bestTime = generateBestTimeLine(cleanQuery);
+      
+      magazineQuote.textContent = getTravelQuote(cleanQuery);
+      magazineHistory.textContent = historyText;
+      magazineExp1.textContent = experiences[0];
+      magazineExp2.textContent = experiences[1];
+      magazineExp3.textContent = experiences[2];
+      magazineBestTime.textContent = bestTime;
+      
+      magazineRouteButton.onclick = function() {
+        window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(cleanQuery)}`, '_blank');
+      };
+      
+      magazineMapButton.onclick = function() {
+        window.open(`https://www.google.com/maps/search/${encodeURIComponent(cleanQuery)}`, '_blank');
+      };
+      
+      // Scroll to magazine section
+      magazineSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    
+    function handleLogin() {
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      if (!username || !password) {
+        alert('Vui lòng nhập đầy đủ thông tin! 😊');
+        return;
+      }
+      localStorage.setItem('duyGoUser', username);
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('mainApp').classList.add('active');
+      updateUserInfo(username);
+    }
+
+    function handleRegister() {
+      const name = document.getElementById('registerName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value.trim();
+      if (!name || !email || !password) {
+        alert('Vui lòng nhập đầy đủ thông tin để đăng ký 😊');
+        return;
+      }
+      localStorage.setItem('duyGoUser', name);
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('mainApp').classList.add('active');
+      updateUserInfo(name);
+    }
+
+    function showRegisterForm() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('registerForm').classList.remove('hidden');
+    }
+
+    function showLoginForm() {
+      document.getElementById('registerForm').classList.add('hidden');
+      document.getElementById('loginForm').classList.remove('hidden');
+    }
+
+    function updateUserInfo(name) {
+      const avatar = name.charAt(0).toUpperCase();
+      document.getElementById('userAvatar').textContent = avatar;
+      document.getElementById('userName').textContent = `👋 ${name}`;
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('duyGoUser');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('mainApp').classList.remove('active');
+      document.getElementById('loginUsername').value = '';
+      document.getElementById('loginPassword').value = '';
+      showLoginForm();
+    }
+
+    function refreshTips() {
+      const randomTip = tips[Math.floor(Math.random() * tips.length)];
+      document.getElementById('tipsContent').textContent = randomTip;
+    }
+
+    function estimateCost() {
+      const budget = parseInt(document.getElementById('budgetInput').value, 10);
+      const adviceBox = document.getElementById('costAdvice');
+      if (isNaN(budget) || budget <= 0) {
+        alert('❌ Vui lòng nhập một số hợp lệ!');
+        return;
+      }
+      let advice = '';
+      if (budget < 1000000) {
+        advice = '💸 Budget hẹp quá! Chỉ ăn mì tôm ngon lành thôi.';
+      } else if (budget < 5000000) {
+        advice = '🍜 Với ngân sách này, bạn sẽ ăn hết tiền cho ăn uống!';
+      } else if (budget < 20000000) {
+        advice = '🏨 Đủ cho một chuyến du lịch thoải mái, không quá sang trọng.';
+      } else if (budget < 50000000) {
+        advice = '💎 Bạn sẽ sống như một hoàng tử/công chúa!';
+      } else {
+        advice = '👑 Wow! Bạn chơi to đấy! Chúc mừng bạn sắp trở thành tỷ phú! 🎉';
+      }
+      alert(advice);
+    }
+
+    window.addEventListener('load', function() {
+      const user = localStorage.getItem('duyGoUser');
+      if (user) {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('mainApp').classList.add('active');
+        updateUserInfo(user);
+      }
+    });
+
+    // Search functionality
+    searchInput.addEventListener('keyup', function(event) {
+      if (event.key === 'Enter') {
+        handleSearch();
+      }
+    });
+
+    function handleSearch() {
+      const query = searchInput.value.trim().toLowerCase();
+      if (!query) return;
+
+      const cards = document.querySelectorAll('.destination-card');
+      let found = false;
+
+      // Filter existing cards
+      cards.forEach(card => {
+        const cardName = card.dataset.name.toLowerCase();
+        if (cardName.includes(query)) {
+          card.style.display = 'block';
+          found = true;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Show magazine section if found, create new card if not
+      if (found) {
+        const foundCard = Array.from(cards).find(card => 
+          card.dataset.name.toLowerCase().includes(query)
+        );
+        if (foundCard) {
+          // Update magazine image with fade effect for found cards
+          const magazineImage = document.getElementById('magazineImage');
+          getSmartImageUrl(foundCard.dataset.name, (imageUrl) => {
+            setImageWithFade(magazineImage, imageUrl);
+          });
+          
+          showMagazineSection(foundCard.dataset.name);
+        }
+        searchInput.value = '';
+      } else {
+        createNewDestination(searchInput.value.trim());
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Login form Enter key handling
+      const inputs = document.querySelectorAll('.login-input');
+      inputs.forEach(input => {
+        input.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            const loginForm = document.getElementById('loginForm');
+            if (!loginForm.classList.contains('hidden')) {
+              handleLogin();
+            } else {
+              handleRegister();
+            }
+          }
+        });
+      });
+
+      // Khám phá button click handling
+      const grid = document.getElementById('destinationsGrid');
+      grid.addEventListener('click', function(event) {
+        if (event.target.classList.contains('card-button')) {
+          const card = event.target.closest('.destination-card');
+          const query = card.dataset.name;
+          
+          // Update magazine image with fade effect
+          const magazineImage = document.getElementById('magazineImage');
+          getSmartImageUrl(query, (imageUrl) => {
+            setImageWithFade(magazineImage, imageUrl);
+          });
+          
+          showMagazineSection(query);
+        }
+      });
+
+      });
+  </script>
+</body>
+</html>
